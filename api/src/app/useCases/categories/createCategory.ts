@@ -16,6 +16,5 @@ export async function createCategories(request: Request, response: Response) {
   } catch (error) {
     console.error(error)
     response.sendStatus(500)
-
   }
 }
