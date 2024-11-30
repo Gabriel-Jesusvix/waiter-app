@@ -1,17 +1,37 @@
+import { useEffect } from "react";
 import { Order } from "../../../types/Order";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import CloseIcon from "../../images/close-icon.svg";
-import { ModalBody, OrderDetails, OverLay } from "./styles";
+import { Actions, ModalBody, OrderDetails, OverLay } from "./styles";
 
 interface OrderModalProps {
   visible: boolean;
   order: Order | null;
+  onClose: () => void;
 }
 
-export function OrderModal({ visible, order }: OrderModalProps) {
+export function OrderModal({ visible, order, onClose }: OrderModalProps) {
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
   if (!visible || !order) {
     return null;
   }
+
+  const total = order.products.reduce((total, { product, quantity }) => {
+    return total + product.price * quantity;
+  }, 0);
 
   return (
     <OverLay>
@@ -19,7 +39,7 @@ export function OrderModal({ visible, order }: OrderModalProps) {
         <header>
           <strong>Mesa {order.table}</strong>
 
-          <button type="button">
+          <button type="button" onClick={onClose}>
             <img src={CloseIcon} alt="icon de fechar" />
           </button>
         </header>
@@ -58,7 +78,26 @@ export function OrderModal({ visible, order }: OrderModalProps) {
               </div>
             ))}
           </div>
+          <div className="total">
+            <span>Total:</span>
+            <strong>{formatCurrency(total)}</strong>
+          </div>
         </OrderDetails>
+        <Actions>
+          <button type="button" className="primary">
+            <span>
+              {order.status === "WAITING" && "👩🏻‍🍳"}
+              {order.status === "IN_PRODUCTION" && "✅"}
+            </span>
+            <strong>
+              {order.status === "WAITING" && "Iniciar Produção"}
+              {order.status === "IN_PRODUCTION" && "Concluir Pedido"}
+            </strong>
+          </button>
+          <button type="button" className="secundary">
+            Cancelar Pedido
+          </button>
+        </Actions>
       </ModalBody>
     </OverLay>
   );
