@@ -1,8 +1,9 @@
+import { Button } from "../components/Button";
 import { Categories } from "../components/Categories";
 import { Header } from "../components/Header";
 import { Menu } from "../components/Menu";
-import { Text } from "../components/Text";
-import { CategoriesContainer, Container, MenuContainer } from "./styles";
+import { products } from "../mocks/products";
+import { CategoriesContainer, Container, Footer, FooterContainer, MenuContainer } from "./styles";
 
 
 export function Main (){
@@ -13,8 +14,22 @@ export function Main (){
         <Categories />
       </CategoriesContainer>
       <MenuContainer>
-        <Menu />
+        <Menu
+          onAddToCart={() =>{}}
+          products={products}
+        />
       </MenuContainer>
+      <Footer>
+        <FooterContainer>
+          <Button
+            loading={false}
+            onPress={()=>{}}
+            disabled={false}
+          >
+            Novo pedido
+          </Button>
+        </FooterContainer>
+      </Footer>
     </Container>
   )
 }

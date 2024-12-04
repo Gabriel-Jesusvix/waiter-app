@@ -2,6 +2,7 @@ import { StyleSheet, StatusBar} from 'react-native';
 import { useFonts } from 'expo-font'
 import { Main } from './src/Main';
 
+
 export default function App() {
   const [isFontsLoaded] = useFonts({
 		'GeneralSans-400': require('./src/assets/fonts/GeneralSans-Regular.otf'),

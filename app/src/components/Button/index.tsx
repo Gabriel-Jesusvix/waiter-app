@@ -3,7 +3,7 @@ import { Text } from '../Text';
 import { ActivityIndicator } from 'react-native';
 
 interface ButtonProps {
-	children: string;
+	children: React.ReactNode;
 	onPress: () => void;
 	disabled?: boolean;
 	loading?: boolean;
