@@ -10,11 +10,23 @@ import { CategoriesContainer, Container, Footer, FooterContainer, MenuContainer 
 
 export function Main (){
 	const [isTableModalVisible, setIsTableModalVisible] = useState(false);
+  const [selectedTable, setSelectedTable] = useState('')
 
+  function handleSaveTable(table:string) {
+    setSelectedTable(table)
+  }
+
+  function handleResetOrder() {
+		setSelectedTable('');
+		// setCartItems([]);
+	}
   return (
     <>
       <Container>
-        <Header />
+        <Header
+          selectedTable={selectedTable}
+          onCancelOrder={handleResetOrder}
+        />
         <CategoriesContainer>
           <Categories />
         </CategoriesContainer>
@@ -26,20 +38,25 @@ export function Main (){
         </MenuContainer>
         <Footer>
           <FooterContainer>
-            <Button
-              loading={false}
-              onPress={() => setIsTableModalVisible(true)}
-              disabled={false}
-            >
-              Novo pedido
-            </Button>
+            {
+              !selectedTable && (
+                <Button
+                  loading={false}
+                  onPress={() => setIsTableModalVisible(true)}
+                  disabled={false}
+                >
+                  Novo pedido
+                </Button>
+              )
+            }
+
           </FooterContainer>
         </Footer>
       </Container>
       <TableModal
         visible={isTableModalVisible}
         onClose={() => setIsTableModalVisible(false)}
-        onSave={() =>{}}
+        onSave={handleSaveTable}
       />
     </>
 
