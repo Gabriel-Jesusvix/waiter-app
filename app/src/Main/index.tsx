@@ -5,77 +5,71 @@ import { Header } from "../components/Header";
 import { Menu } from "../components/Menu";
 import { TableModal } from "../components/TableModal";
 import { products } from "../mocks/products";
-import { CategoriesContainer, Container, Footer, FooterContainer, MenuContainer } from "./styles";
+import { CategoriesContainer, CenteredContainer, Container, Footer, FooterContainer, MenuContainer } from "./styles";
 import { Cart } from "../components/Cart";
 import { CartItem } from "../types/CartItem";
 import { Product } from "../types/Product";
+import { ActivityIndicator } from "react-native";
 
 
-export function Main (){
-	const [isTableModalVisible, setIsTableModalVisible] = useState(false);
+export function Main() {
+  const [isTableModalVisible, setIsTableModalVisible] = useState(false);
   const [selectedTable, setSelectedTable] = useState('')
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      quantity: 1,
-      product: products[0]
-    },
-    {
-      quantity: 2,
-      product: products[1]
-    },
-  ])
-  function handleSaveTable(table:string) {
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  function handleSaveTable(table: string) {
     setSelectedTable(table)
   }
 
   function handleResetOrder() {
-		setSelectedTable('');
-		// setCartItems([]);
-	}
+    setSelectedTable('');
+    setCartItems([]);
+  }
 
   function handleAddToCart(product: Product) {
-    if(!selectedTable) {
-			setIsTableModalVisible(true);
-		}
-		setCartItems((prevState) => {
-			const itemIndex = prevState.findIndex(cartItem => cartItem.product._id === product._id);
+    if (!selectedTable) {
+      setIsTableModalVisible(true);
+    }
+    setCartItems((prevState) => {
+      const itemIndex = prevState.findIndex(cartItem => cartItem.product._id === product._id);
 
-			if (itemIndex < 0) {
-				return prevState.concat({
-					quantity: 1,
-					product,
-				});
-			}
-			const newCartItems = [...prevState];
-			const item = newCartItems[itemIndex];
-			newCartItems[itemIndex] = {
-				...item,
-				quantity: item.quantity + 1,
-			};
-			return newCartItems;
-		});
+      if (itemIndex < 0) {
+        return prevState.concat({
+          quantity: 1,
+          product,
+        });
+      }
+      const newCartItems = [...prevState];
+      const item = newCartItems[itemIndex];
+      newCartItems[itemIndex] = {
+        ...item,
+        quantity: item.quantity + 1,
+      };
+      return newCartItems;
+    });
 
   }
 
   function handleDecrementCartItem(product: Product) {
     setCartItems((prevState) => {
-			const itemIndex = prevState.findIndex(cartItem => cartItem.product._id === product._id);
+      const itemIndex = prevState.findIndex(cartItem => cartItem.product._id === product._id);
 
-			const item = prevState[itemIndex];
-			const newCartItems = [...prevState];
+      const item = prevState[itemIndex];
+      const newCartItems = [...prevState];
 
-			if(item.quantity === 1) {
+      if (item.quantity === 1) {
 
-				newCartItems.splice(itemIndex, 1);
+        newCartItems.splice(itemIndex, 1);
 
-				return newCartItems;
-			}
-			newCartItems[itemIndex] = {
-				...item,
-				quantity: item.quantity - 1,
-			};
-			return newCartItems;
-		});
+        return newCartItems;
+      }
+      newCartItems[itemIndex] = {
+        ...item,
+        quantity: item.quantity - 1,
+      };
+      return newCartItems;
+    });
   }
 
   return (
@@ -85,15 +79,29 @@ export function Main (){
           selectedTable={selectedTable}
           onCancelOrder={handleResetOrder}
         />
-        <CategoriesContainer>
-          <Categories />
-        </CategoriesContainer>
-        <MenuContainer>
-          <Menu
-            onAddToCart={handleAddToCart}
-            products={products}
-          />
-        </MenuContainer>
+        {
+          isLoading && (
+            <CenteredContainer>
+              <ActivityIndicator color='#d73035' size='large' />
+            </CenteredContainer>
+          )
+        }
+        {
+          !isLoading && (
+            <>
+              <CategoriesContainer>
+                <Categories />
+              </CategoriesContainer>
+              <MenuContainer>
+                <Menu
+                  onAddToCart={handleAddToCart}
+                  products={products}
+                />
+              </MenuContainer>
+            </>
+          )
+        }
+
         <Footer>
           <FooterContainer>
             {
@@ -101,21 +109,21 @@ export function Main (){
                 <Button
                   loading={false}
                   onPress={() => setIsTableModalVisible(true)}
-                  disabled={false}
+                  disabled={isLoading}
                 >
                   Novo pedido
                 </Button>
               )
             }
             {selectedTable && (
-						<Cart
-							cartItems={cartItems}
-							onAdd={handleAddToCart}
-							onDecrement={handleDecrementCartItem}
-							onConfirmOrder={handleResetOrder}
-							selectedTable={selectedTable}
-						/>
-					)}
+              <Cart
+                cartItems={cartItems}
+                onAdd={handleAddToCart}
+                onDecrement={handleDecrementCartItem}
+                onConfirmOrder={handleResetOrder}
+                selectedTable={selectedTable}
+              />
+            )}
           </FooterContainer>
         </Footer>
       </Container>
