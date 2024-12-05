@@ -6,6 +6,7 @@ import { Menu } from "../components/Menu";
 import { TableModal } from "../components/TableModal";
 import { products } from "../mocks/products";
 import { CategoriesContainer, Container, Footer, FooterContainer, MenuContainer } from "./styles";
+import { Cart } from "../components/Cart";
 
 
 export function Main (){
@@ -49,7 +50,16 @@ export function Main (){
                 </Button>
               )
             }
-
+            {selectedTable && (
+              <></>
+						// <Cart
+            // cartItems={cartItems}
+            // onAdd={handleAddToCart}
+            // onDecrement={handleDecrementCartItem}
+            // onConfirmOrder={handleResetOrder}
+            // selectedTable={selectedTable}
+						// />
+					)}
           </FooterContainer>
         </Footer>
       </Container>
