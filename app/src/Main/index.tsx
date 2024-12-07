@@ -31,19 +31,40 @@ export function Main() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
+  // Função para obter as categorias e produtos
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const [categoriesResponse, productsResponse] = await Promise.all([
+        api.get('/categories'),
+        api.get('/products'),
+      ]);
+      setCategories(categoriesResponse.data.categories);
+      setProducts(productsResponse.data.products);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Erro ao carregar categorias e produtos', error);
+      setIsLoading(false);
+    }
+  };
 
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   async function handleSelectCategory(categoryId: string) {
-    const route = !categoryId
-      ? '/products'
-      : `/categories/${categoryId}/products`;
+    const route = !categoryId ? '/products' : `/categories/${categoryId}/products`;
 
     setIsLoadingProducts(true);
-
-    const { data } = await api.get(route);
-
-    setProducts(data);
-    setIsLoadingProducts(false);
+    try {
+      const { data } = await api.get(route);
+      setProducts(data);
+    } catch (error) {
+      console.error('Erro ao carregar produtos', error);
+    } finally {
+      setIsLoadingProducts(false);
+    }
   }
 
   function handleSaveTable(table: string) {
@@ -95,7 +116,6 @@ export function Main() {
 
       if (item.quantity === 1) {
         newCartItems.splice(itemIndex, 1);
-
         return newCartItems;
       }
 
@@ -107,18 +127,6 @@ export function Main() {
       return newCartItems;
     });
   }
-
-  useEffect(() => {
-    Promise.all([api.get('/categories'), api.get('/products')]).then(
-      ([categoriesResponse, productsResponse]) => {
-        setCategories(categoriesResponse.data);
-        setProducts(productsResponse.data);
-        setIsLoading(false);
-      }
-    ).catch((error) => {
-      console.log(error)
-    })
-  }, []);
 
   return (
     <>
@@ -157,7 +165,7 @@ export function Main() {
                   <CenteredContainer>
                     <Empty />
                     <Text style={{ marginTop: 24 }} color="#666">
-                      Nenhum produco encontrado!
+                      Nenhum produto encontrado!
                     </Text>
                   </CenteredContainer>
                 )}

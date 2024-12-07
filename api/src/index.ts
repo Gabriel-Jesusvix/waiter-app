@@ -1,29 +1,33 @@
 import express from "express";
 import mongoose from "mongoose";
 import path from 'node:path'
-
+import http from 'node:http'
 import { router } from "./app/router";
+import { Server } from 'socket.io'
+
 const app = express();
-const PORT = 3001;
+const server = http.createServer(app)
+export const io = new Server(server)
 
 mongoose
   .connect("mongodb://localhost:27017")
   .then(() => {
+    const PORT = 3000;
 
     app.use((req, res, next) => {
-			res.setHeader('Access-Control-Allow-Origin', '*');
-			res.setHeader('Access-Control-Allow-Methods', '*'); // * = WILDCARD
-			res.setHeader('Access-Control-Allow-Headers', '*');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', '*'); // * = WILDCARD
+      res.setHeader('Access-Control-Allow-Headers', '*');
 
-			next();
-		});
+      next();
+    });
 
     app.use('/uploads', express.static(path.resolve(__dirname, '..', 'uploads')));
     app.use(express.json())
     app.use(router)
 
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`🚀 Server is running on http://localhost:${PORT}`);
     });
   })

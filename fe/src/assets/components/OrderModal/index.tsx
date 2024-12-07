@@ -1,76 +1,74 @@
-import { useEffect } from "react";
-import { Order } from "../../../types/Order";
-import { formatCurrency } from "../../../utils/formatCurrency";
-import CloseIcon from "../../images/close-icon.svg";
-import { Actions, ModalBody, OrderDetails, OverLay } from "./styles";
-
+import { Actions, ModalBody, OrderDetails, Overlay } from './styles';
+import { Order } from '../../../types/Order';
+import { formatCurrency } from '../../../utils/formatCurrency';
+import CloseIcon from '../../images/close-icon.svg'
 interface OrderModalProps {
   visible: boolean;
-  order: Order | null;
+  order: null | Order;
   onClose: () => void;
+  onCancelOrder: () => Promise<void>;
+  isLoading: boolean;
+  onChangeOrderStatus: () => void;
 }
 
-export function OrderModal({ visible, order, onClose }: OrderModalProps) {
-
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    }
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [onClose]);
-
+export function OrderModal({
+  visible,
+  order,
+  onClose,
+  onCancelOrder,
+  isLoading,
+  onChangeOrderStatus,
+}: OrderModalProps) {
   if (!visible || !order) {
     return null;
   }
 
-  const total = order.products.reduce((total, { product, quantity }) => {
-    return total + product.price * quantity;
+  const total = order.products.reduce((acc, { quantity, product }) => {
+    return acc + product.price * quantity;
   }, 0);
 
   return (
-    <OverLay>
+    <Overlay>
       <ModalBody>
         <header>
           <strong>Mesa {order.table}</strong>
 
           <button type="button" onClick={onClose}>
-            <img src={CloseIcon} alt="icon de fechar" />
+            <img src={CloseIcon} alt="Ícone de fechar" />
           </button>
         </header>
+
         <div className="status-container">
           <small>Status do pedido</small>
           <div>
             <span>
-              {order.status === "WAITING" && "⏱️"}
-              {order.status === "IN_PRODUCTION" && "👩‍🍳"}
-              {order.status === "DONE" && "✅"}
+              {order.status === 'WAITING' && '🕗'}
+              {order.status === 'IN_PRODUCTION' && '👩‍🍳'}
+              {order.status === 'DONE' && '✅'}
             </span>
             <strong>
-              {order.status === "WAITING" && "Fila de espera"}
-              {order.status === "IN_PRODUCTION" && "Em produção"}
-              {order.status === "DONE" && "Pronto!"}
+              {order.status === 'WAITING' && 'Fila de espera'}
+              {order.status === 'IN_PRODUCTION' && 'Em preparação'}
+              {order.status === 'DONE' && 'Pronto!'}
             </strong>
           </div>
         </div>
+
         <OrderDetails>
           <strong>Itens</strong>
+
           <div className="order-items">
             {order.products.map(({ _id, product, quantity }) => (
               <div className="item" key={_id}>
                 <img
                   src={`http://localhost:3001/uploads/${product.imagePath}`}
                   alt={product.name}
-                  width="56"
-                  height="28.51"
+                  width="56px"
+                  height="28.51px"
                 />
 
                 <span className="quantity">{quantity}x</span>
+
                 <div className="product-details">
                   <strong>{product.name}</strong>
                   <span>{formatCurrency(product.price)}</span>
@@ -78,27 +76,42 @@ export function OrderModal({ visible, order, onClose }: OrderModalProps) {
               </div>
             ))}
           </div>
+
           <div className="total">
-            <span>Total:</span>
+            <span>Total</span>
             <strong>{formatCurrency(total)}</strong>
           </div>
         </OrderDetails>
+
         <Actions>
-          <button type="button" className="primary">
-            <span>
-              {order.status === "WAITING" && "👩🏻‍🍳"}
-              {order.status === "IN_PRODUCTION" && "✅"}
-            </span>
-            <strong>
-              {order.status === "WAITING" && "Iniciar Produção"}
-              {order.status === "IN_PRODUCTION" && "Concluir Pedido"}
-            </strong>
-          </button>
-          <button type="button" className="secundary">
-            Cancelar Pedido
+          {order.status !== 'DONE' && (
+            <button
+              type="button"
+              className="primary"
+              disabled={isLoading}
+              onClick={onChangeOrderStatus}
+            >
+              <span>
+                {order.status === 'WAITING' && '👩‍🍳'}
+                {order.status === 'IN_PRODUCTION' && '✅'}
+              </span>
+              <strong>
+                {order.status === 'WAITING' && 'Iniciar produção'}
+                {order.status === 'IN_PRODUCTION' && 'Concluir o pedido'}
+              </strong>
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="secondary"
+            onClick={onCancelOrder}
+            disabled={isLoading}
+          >
+            <span>Cancelar pedido</span>
           </button>
         </Actions>
       </ModalBody>
-    </OverLay>
+    </Overlay>
   );
 }
