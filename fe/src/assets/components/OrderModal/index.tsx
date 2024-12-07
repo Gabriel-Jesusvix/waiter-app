@@ -61,7 +61,7 @@ export function OrderModal({
             {order.products.map(({ _id, product, quantity }) => (
               <div className="item" key={_id}>
                 <img
-                  src={`http://localhost:3001/uploads/${product.imagePath}`}
+                  src={`http://localhost:3000/uploads/${product.imagePath}`}
                   alt={product.name}
                   width="56px"
                   height="28.51px"

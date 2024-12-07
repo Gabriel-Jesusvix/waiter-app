@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { FlatList } from 'react-native';
 import { Product } from '../../types/Product';
 import { formatCurrency } from '../../utils/formatCurrency';
-// import { formatCurrency } from '../../utils/formatCurrency';
 import { PlusCircle } from '../Icons/PlusCircle';
 import { ProductModal } from '../ProductModal';
 import { Text } from '../Text';
@@ -51,7 +50,7 @@ export function Menu({ onAddToCart, products }: MenuProps) {
           >
             <ProductImage
               source={{
-                uri: `http://192.168.0.101:3001/uploads/${product.imagePath}`,
+                uri: `http://192.168.1.5:3000/uploads/${product.imagePath}`,
               }}
             />
             <ProductDetails>
