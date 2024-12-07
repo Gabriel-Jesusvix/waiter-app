@@ -31,15 +31,7 @@ export function Main() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
-  useEffect(() => {
-    Promise.all([api.get('/categories'), api.get('/products')]).then(
-      ([categoriesResponse, productsResponse]) => {
-        setCategories(categoriesResponse.data);
-        setProducts(productsResponse.data);
-        setIsLoading(false);
-      }
-    );
-  }, []);
+
 
   async function handleSelectCategory(categoryId: string) {
     const route = !categoryId
@@ -115,6 +107,18 @@ export function Main() {
       return newCartItems;
     });
   }
+
+  useEffect(() => {
+    Promise.all([api.get('/categories'), api.get('/products')]).then(
+      ([categoriesResponse, productsResponse]) => {
+        setCategories(categoriesResponse.data);
+        setProducts(productsResponse.data);
+        setIsLoading(false);
+      }
+    ).catch((error) => {
+      console.log(error)
+    })
+  }, []);
 
   return (
     <>
