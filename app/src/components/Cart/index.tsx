@@ -18,17 +18,17 @@ import { Item,
 	Summary,
 	TotalContainer,
 } from './styles';
-// import { api } from '../../utils/api';
+import { api } from '../../utils/api';
 
 interface CartProps {
 	cartItems: CartItem[];
 	onAdd: (product: Product) => void;
 	onDecrement: (product: Product) => void;
-	onConfirmOrder: () => void;
+	onConfirmedOrder: () => void;
 	selectedTable: string;
 }
 
-export function Cart({ cartItems, onAdd, onDecrement, onConfirmOrder, selectedTable }: CartProps) {
+export function Cart({ cartItems, onAdd, onDecrement, onConfirmedOrder, selectedTable }: CartProps) {
 
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -50,14 +50,14 @@ export function Cart({ cartItems, onAdd, onDecrement, onConfirmOrder, selectedTa
 			}))
 		};
 
-		// await api.post('/orders', payload);
+		await api.post('/orders', payload);
 
 		setIsLoading(false);
 		setIsModalVisible(true);
 	}
 
 	function handleOn() {
-		onConfirmOrder();
+		onConfirmedOrder();
 		setIsModalVisible(false);
 	}
 
